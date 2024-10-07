@@ -3,13 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ummm...</title>
+    <title>umm...</title>
+    <style>
+        /* リンクボックスの基本スタイル */
+        .link-box {
+            background: lightblue;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* 画面サイズに応じたボックスの大きさ調整 */
+        @media (min-width: 1024px) {
+            .link-box {
+                width: 150px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .link-box {
+                width: 120px;
+                height: 40px;
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .link-box {
+                width: 100px;
+                height: 35px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .link-box {
+                width: 80px;
+                height: 30px;
+                font-size: 0.8em;
+            }
+        }
+
+        /* SVG全体のスタイル */
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* SVGのクリックイベントを無効化 */
+        }
+
+        /* テストテキストのスタイル */
+        p {
+            font-size: 1.5em;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <p>test</p>
-    <a href="https://www.instagram.com/_hi_t_o_ri_/">hitori</a>
-    <a href="https://www.instagram.com/dnremb/">shingo</a>
-    <a href="https://www.instagram.com/00n_00e/">onoe</a>
-    <a href="https://www.instagram.com/_yusuke_morio/">morio</a>
+
+    <!-- リンクボックス -->
+    <div id="link1" class="link-box">
+        <a href="https://www.instagram.com/_hi_t_o_ri_/">hitori</a>
+    </div>
+    <div id="link2" class="link-box">
+        <a href="https://www.instagram.com/dnremb/">shingo</a>
+    </div>
+    <div id="link3" class="link-box">
+        <a href="https://www.instagram.com/00n_00e/">onoe</a>
+    </div>
+    <div id="link4" class="link-box">
+        <a href="https://www.instagram.com/_yusuke_morio/">morio</a>
+    </div>
+
+    <!-- SVG線描画用 -->
+    <svg id="line-svg">
+        <line id="line1" stroke="black" stroke-width="2"/>
+        <line id="line2" stroke="black" stroke-width="2"/>
+        <line id="line3" stroke="black" stroke-width="2"/>
+    </svg>
+
+    <script>
+        function getRandomPosition(maxWidth, maxHeight, boxWidth, boxHeight) {
+            const x = Math.random() * (maxWidth - boxWidth);
+            const y = Math.random() * (maxHeight - boxHeight);
+            return { x, y };
+        }
+
+        function setPosition(element, position) {
+            element.style.left = position.x + 'px';
+            element.style.top = position.y + 'px';
+        }
+
+        function drawLine(lineId, box1Pos, box2Pos, boxWidth, boxHeight) {
+            const line = document.getElementById(lineId);
+            line.setAttribute('x1', box1Pos.x + boxWidth / 2);
+            line.setAttribute('y1', box1Pos.y + boxHeight / 2);
+            line.setAttribute('x2', box2Pos.x + boxWidth / 2);
+            line.setAttribute('y2', box2Pos.y + boxHeight / 2);
+        }
+
+        function isOverlapping(newPos, existingPositions, boxWidth, boxHeight) {
+            for (let pos of existingPositions) {
+                const xOverlap = newPos.x < pos.x + boxWidth && newPos.x + boxWidth > pos.x;
+                const yOverlap = newPos.y < pos.y + boxHeight && newPos.y + boxHeight > pos.y;
+                if (xOverlap && yOverlap) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function getNonOverlappingPosition(existingPositions, boxWidth, boxHeight) {
+            let position;
+            do {
+                position = getRandomPosition(window.innerWidth, window.innerHeight, boxWidth, boxHeight);
+            } while (isOverlapping(position, existingPositions, boxWidth, boxHeight));
+            return position;
+        }
+
+        // 現在のボックスサイズを取得
+        const boxWidth = document.querySelector('.link-box').offsetWidth;
+        const boxHeight = document.querySelector('.link-box').offsetHeight;
+
+        const existingPositions = [];
+
+        // ボックスの重複しないランダム位置の取得
+        const link1Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+        existingPositions.push(link1Pos);
+        const link2Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+        existingPositions.push(link2Pos);
+        const link3Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+        existingPositions.push(link3Pos);
+        const link4Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+        existingPositions.push(link4Pos);
+
+        // ボックスの位置設定
+        setPosition(document.getElementById('link1'), link1Pos);
+        setPosition(document.getElementById('link2'), link2Pos);
+        setPosition(document.getElementById('link3'), link3Pos);
+        setPosition(document.getElementById('link4'), link4Pos);
+
+        // リンクボックス間の線を描画
+        drawLine('line1', link1Pos, link2Pos, boxWidth, boxHeight);
+        drawLine('line2', link2Pos, link3Pos, boxWidth, boxHeight);
+        drawLine('line3', link3Pos, link4Pos, boxWidth, boxHeight);
+
+    </script>
 </body>
 </html>
