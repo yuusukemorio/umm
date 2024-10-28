@@ -19,7 +19,7 @@
             .link-box {
                 width: 150px;
                 height: 50px;
-                font-size: 1.4em;
+                font-size: 1.2em;
             }
         }
 
@@ -27,7 +27,7 @@
             .link-box {
                 width: 120px;
                 height: 40px;
-                font-size: 1.2em;
+                font-size: 1em;
             }
         }
 
@@ -35,7 +35,7 @@
             .link-box {
                 width: 100px;
                 height: 35px;
-                font-size: 1.1em;
+                font-size: 0.9em;
             }
         }
 
@@ -43,7 +43,7 @@
             .link-box {
                 width: 80px;
                 height: 30px;
-                font-size: 1.0em;
+                font-size: 0.8em;
             }
         }
 
@@ -105,8 +105,8 @@
         }
 
         function drawLine(svg, style, box1Pos, box2Pos, boxWidth, boxHeight) {
-            const waveAmplitude = 80;//周期
-            const waveFrequency = Math.abs(box2Pos.x - box1Pos.x) / 20;
+            const waveAmplitude = 30; // 振幅を小さくする
+            const waveFrequency = Math.abs(box2Pos.x - box1Pos.x) / 20; // 周波数を調整
 
             let path;
 
@@ -124,8 +124,10 @@
                 const wavePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 wavePath.setAttribute("d", path);
                 wavePath.setAttribute("stroke", "black");
-                wavePath.setAttribute("stroke-width", "0.8");
+                wavePath.setAttribute("stroke-width", "0.5");
                 wavePath.setAttribute("fill", "none");
+                wavePath.setAttribute("stroke-linecap", "round"); // 端を丸くする
+                wavePath.setAttribute("stroke-linejoin", "round"); // 接合部を丸くする
                 svg.appendChild(wavePath);
             } else {
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -134,7 +136,7 @@
                 line.setAttribute("x2", box2Pos.x + boxWidth / 2);
                 line.setAttribute("y2", box2Pos.y + boxHeight / 2);
                 line.setAttribute("stroke", "black");
-                line.setAttribute("stroke-width", "0.8");
+                line.setAttribute("stroke-width", "0.5");
 
                 if (style === "dashed") {
                     line.setAttribute("stroke-dasharray", "5,5");
