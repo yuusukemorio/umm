@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>umm...</title>
     <style>
-        /* リンクボックスの基本スタイル */
         .link-box {
-            /* 現状色なし */
             background: rgba(173, 216, 230, 0);
             position: absolute;
             display: flex;
@@ -17,7 +15,6 @@
             text-align: center;
         }
 
-        /* 画面サイズに応じたボックスの大きさ調整 */
         @media (min-width: 1024px) {
             .link-box {
                 width: 150px;
@@ -50,42 +47,32 @@
             }
         }
 
-        /* SVG全体のスタイル */
         svg {
             position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            pointer-events: none; /* SVGのクリックイベントを無効化 */
+            pointer-events: none;
         }
 
-        /* テストテキストのスタイル */
-        p {
-            font-size: 1.5em;
-            text-align: center;
-        }
-
-        img{
+        img {
             width: 50vh;
             margin-left: 15vw;
-
             margin-top: 6vw;
         }
 
-        body{
+        body {
             background-color: #ffffff;
         }
 
-        html,body {
-  overflow: hidden;
-}
-
+        html, body {
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
 
-    <!-- <img src="test1.jpg" alt=""> -->
     <img src="test3.jpg" alt="">
 
     <!-- リンクボックス -->
@@ -103,11 +90,7 @@
     </div>
 
     <!-- SVG線描画用 -->
-    <svg id="line-svg">
-        <line id="line1" stroke="black" stroke-width="0.8"/>
-        <line id="line2" stroke="black" stroke-width="0.8"/>
-        <line id="line3" stroke="black" stroke-width="0.8"/>
-    </svg>
+    <svg id="line-svg"></svg>
 
     <script>
         function getRandomPosition(maxWidth, maxHeight, boxWidth, boxHeight) {
@@ -121,12 +104,47 @@
             element.style.top = position.y + 'px';
         }
 
-        function drawLine(lineId, box1Pos, box2Pos, boxWidth, boxHeight) {
-            const line = document.getElementById(lineId);
-            line.setAttribute('x1', box1Pos.x + boxWidth / 2);
-            line.setAttribute('y1', box1Pos.y + boxHeight / 2);
-            line.setAttribute('x2', box2Pos.x + boxWidth / 2);
-            line.setAttribute('y2', box2Pos.y + boxHeight / 2);
+        function drawLine(svg, style, box1Pos, box2Pos, boxWidth, boxHeight) {
+            const waveAmplitude = 80;//周期
+            const waveFrequency = Math.abs(box2Pos.x - box1Pos.x) / 20;
+
+            let path;
+
+            if (style === "wavy") {
+                path = `M${box1Pos.x + boxWidth / 2},${box1Pos.y + boxHeight / 2} `;
+                const dx = (box2Pos.x - box1Pos.x) / waveFrequency;
+                const dy = (box2Pos.y - box1Pos.y) / waveFrequency;
+
+                for (let i = 0; i <= waveFrequency; i++) {
+                    const x = dx * i + box1Pos.x + boxWidth / 2;
+                    const y = dy * i + box1Pos.y + boxHeight / 2 + waveAmplitude * Math.sin(i * 2 * Math.PI / waveFrequency);
+                    path += `L${x},${y} `;
+                }
+
+                const wavePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                wavePath.setAttribute("d", path);
+                wavePath.setAttribute("stroke", "black");
+                wavePath.setAttribute("stroke-width", "0.8");
+                wavePath.setAttribute("fill", "none");
+                svg.appendChild(wavePath);
+            } else {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", box1Pos.x + boxWidth / 2);
+                line.setAttribute("y1", box1Pos.y + boxHeight / 2);
+                line.setAttribute("x2", box2Pos.x + boxWidth / 2);
+                line.setAttribute("y2", box2Pos.y + boxHeight / 2);
+                line.setAttribute("stroke", "black");
+                line.setAttribute("stroke-width", "0.8");
+
+                if (style === "dashed") {
+                    line.setAttribute("stroke-dasharray", "5,5");
+                } else if (style === "dashed2") {
+                    line.setAttribute("stroke-dasharray", "2,6");
+                } else {
+                    line.setAttribute("stroke-dasharray", "");
+                }
+                svg.appendChild(line);
+            }
         }
 
         function isOverlapping(newPos, existingPositions, boxWidth, boxHeight) {
@@ -148,13 +166,10 @@
             return position;
         }
 
-        // 現在のボックスサイズを取得
         const boxWidth = document.querySelector('.link-box').offsetWidth;
         const boxHeight = document.querySelector('.link-box').offsetHeight;
-
         const existingPositions = [];
 
-        // ボックスの重複しないランダム位置の取得
         const link1Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
         existingPositions.push(link1Pos);
         const link2Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
@@ -164,17 +179,17 @@
         const link4Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
         existingPositions.push(link4Pos);
 
-        // ボックスの位置設定
         setPosition(document.getElementById('link1'), link1Pos);
         setPosition(document.getElementById('link2'), link2Pos);
         setPosition(document.getElementById('link3'), link3Pos);
         setPosition(document.getElementById('link4'), link4Pos);
 
-        // リンクボックス間の線を描画
-        drawLine('line1', link1Pos, link2Pos, boxWidth, boxHeight);
-        drawLine('line2', link2Pos, link3Pos, boxWidth, boxHeight);
-        drawLine('line3', link3Pos, link4Pos, boxWidth, boxHeight);
-
+        const svg = document.getElementById("line-svg");
+        // 点線、波線、直線、直線の順で描画
+        drawLine(svg, "dashed", link1Pos, link2Pos, boxWidth, boxHeight);
+        drawLine(svg, "wavy", link2Pos, link3Pos, boxWidth, boxHeight);
+        drawLine(svg, "solid", link3Pos, link4Pos, boxWidth, boxHeight);
+        // drawLine(svg, "solid", link4Pos, link1Pos, boxWidth, boxHeight);
     </script>
 </body>
 </html>
