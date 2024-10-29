@@ -33,17 +33,17 @@
 
         @media (max-width: 768px) {
             .link-box {
-                width: 100px;
-                height: 35px;
-                font-size: 1em;
+                width: 90px;
+                height: 30px;
+                font-size: 0.9em;
             }
         }
 
         @media (max-width: 480px) {
             .link-box {
-                width: 80px;
-                height: 30px;
-                font-size: 0.9em;
+                width: 70px;
+                height: 25px;
+                font-size: 0.8em;
             }
         }
 
@@ -94,8 +94,8 @@
 
     <script>
         function getRandomPosition(maxWidth, maxHeight, boxWidth, boxHeight) {
-            const x = Math.random() * (maxWidth - boxWidth);
-            const y = Math.random() * (maxHeight - boxHeight);
+            const x = Math.random() * (maxWidth - boxWidth - 10); // 余白を少し持たせる
+            const y = Math.random() * (maxHeight - boxHeight - 10); // 余白を少し持たせる
             return { x, y };
         }
 
