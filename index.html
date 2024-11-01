@@ -107,7 +107,6 @@
         function drawLine(svg, style, box1Pos, box2Pos, boxWidth, boxHeight) {
             const waveAmplitude = 30; // 振幅を小さくする
             const waveFrequency = Math.abs(box2Pos.x - box1Pos.x) / 20; // 周波数を調整
-
             let path;
 
             if (style === "wavy") {
@@ -126,8 +125,8 @@
                 wavePath.setAttribute("stroke", "black");
                 wavePath.setAttribute("stroke-width", "0.5");
                 wavePath.setAttribute("fill", "none");
-                wavePath.setAttribute("stroke-linecap", "round"); // 端を丸くする
-                wavePath.setAttribute("stroke-linejoin", "round"); // 接合部を丸くする
+                wavePath.setAttribute("stroke-linecap", "round");
+                wavePath.setAttribute("stroke-linejoin", "round");
                 svg.appendChild(wavePath);
             } else {
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -168,30 +167,40 @@
             return position;
         }
 
-        const boxWidth = document.querySelector('.link-box').offsetWidth;
-        const boxHeight = document.querySelector('.link-box').offsetHeight;
-        const existingPositions = [];
+        function updatePositions() {
+            // 前の線をクリア
+            const svg = document.getElementById("line-svg");
+            svg.innerHTML = '';
 
-        const link1Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
-        existingPositions.push(link1Pos);
-        const link2Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
-        existingPositions.push(link2Pos);
-        const link3Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
-        existingPositions.push(link3Pos);
-        const link4Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
-        existingPositions.push(link4Pos);
+            const boxWidth = document.querySelector('.link-box').offsetWidth;
+            const boxHeight = document.querySelector('.link-box').offsetHeight;
+            const existingPositions = [];
 
-        setPosition(document.getElementById('link1'), link1Pos);
-        setPosition(document.getElementById('link2'), link2Pos);
-        setPosition(document.getElementById('link3'), link3Pos);
-        setPosition(document.getElementById('link4'), link4Pos);
+            const link1Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+            existingPositions.push(link1Pos);
+            const link2Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+            existingPositions.push(link2Pos);
+            const link3Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+            existingPositions.push(link3Pos);
+            const link4Pos = getNonOverlappingPosition(existingPositions, boxWidth, boxHeight);
+            existingPositions.push(link4Pos);
 
-        const svg = document.getElementById("line-svg");
-        // 点線、波線、直線、直線の順で描画
-        drawLine(svg, "dashed", link1Pos, link2Pos, boxWidth, boxHeight);
-        drawLine(svg, "wavy", link2Pos, link3Pos, boxWidth, boxHeight);
-        drawLine(svg, "solid", link3Pos, link4Pos, boxWidth, boxHeight);
-        // drawLine(svg, "solid", link4Pos, link1Pos, boxWidth, boxHeight);
+            setPosition(document.getElementById('link1'), link1Pos);
+            setPosition(document.getElementById('link2'), link2Pos);
+            setPosition(document.getElementById('link3'), link3Pos);
+            setPosition(document.getElementById('link4'), link4Pos);
+
+            // 線を描画
+            drawLine(svg, "dashed", link1Pos, link2Pos, boxWidth, boxHeight);
+            drawLine(svg, "wavy", link2Pos, link3Pos, boxWidth, boxHeight);
+            drawLine(svg, "solid", link3Pos, link4Pos, boxWidth, boxHeight);
+        }
+
+        // 初回の位置設定
+        updatePositions();
+
+        // 10秒ごとに位置を更新
+        setInterval(updatePositions, 7000);
     </script>
 </body>
 </html>
